@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Área do Tricolor - BunnyFlix</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #0d1b2a;
+      color: #ffffff;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: rgba(0, 0, 0, 0.85);
+      padding: 30px;
+      border-radius: 12px;
+      border: 2px solid #1a75ff;
+      box-shadow: 0 8px 32px rgba(26, 117, 255, 0.3);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #1a75ff;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+
+    .header h2 {
+      color: #1a75ff;
+      font-size: 24px;
+    }
+
+    .alert-sucesso {
+      background-color: rgba(70, 211, 105, 0.2);
+      border: 1px solid #46d369;
+      color: #46d369;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #333;
+      font-size: 14px;
+    }
+
+    th {
+      background-color: #1a75ff;
+      color: #fff;
+    }
+
+    .nav-btns {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-voltar {
+      padding: 8px 16px;
+      background: #1a75ff;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    .btn-sair {
+      padding: 8px 16px;
+      background: #ff5252;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h2><i class="fa-solid fa-shield-halved"></i> Área do Tricolor</h2>
+      <div class="nav-btns">
+        <a href="/" class="btn-voltar"><i class="fa-solid fa-store"></i> Ir ao BunnyFlix</a>
+        <a href="/login" class="btn-sair">Sair</a>
+      </div>
+    </div>
+
+    <div class="alert-sucesso" th:text="${mensagem}"></div>
+
+    <h3>Histórico de Logins Gravados no Banco H2:</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Usuário</th>
+          <th>IP do Acesso</th>
+          <th>Data e Hora</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="log : ${logs}">
+          <td th:text="${log.id}">1</td>
+          <td th:text="${log.usuario.usuario}">tricolor</td>
+          <td th:text="${log.ipUsuario}">127.0.0.1</td>
+          <td th:text="${#temporals.format(log.dataAcesso, 'dd/MM/yyyy HH:mm:ss')}">28/09/2026</td>
+          <td><span style="color:#46d369; font-weight:bold;">Sucesso</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</body>
+</html>
