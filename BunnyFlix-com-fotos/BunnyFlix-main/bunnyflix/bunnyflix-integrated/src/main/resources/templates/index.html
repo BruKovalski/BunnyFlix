@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{fragments :: head(${tituloPagina}, ${descricaoPagina})}">
+  <title>BunnyFlix</title>
+</head>
+<body>
+  <th:block th:replace="~{fragments :: cabecalho}"></th:block>
+
+  <main id="conteudo">
+
+    <!-- BANNER PRINCIPAL -->
+    <section class="hero" aria-labelledby="heroTitulo"
+             th:classappend="${@fotos.heroTemFoto()} ? 'has-photo'"
+             th:style="${@fotos.hero() != null} ? 'background-image:url(' + ${@fotos.hero()} + ')'">
+      <div class="hero-inner">
+        <p class="eyebrow">Catálogo de produtos pet</p>
+        <h1 id="heroTitulo">Tudo o que o seu pet precisa, organizado em um só lugar</h1>
+        <p class="hero-text">Consulte alimentos, habitats, brinquedos, acessórios e produtos de higiene para cães, gatos,
+          aves, peixes e pequenos animais. Aqui você pesquisa e compara produtos; não é necessário criar conta.</p>
+        <form class="hero-search" th:action="@{/catalogo}" action="/catalogo" method="get" role="search">
+          <label for="buscaHero" class="sr-only">Buscar no catálogo</label>
+          <input type="search" id="buscaHero" name="q" placeholder="Ex.: ração, aquário, feno, coleira" maxlength="80">
+          <button type="submit" class="btn btn-accent"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Buscar</button>
+        </form>
+        <p class="hero-links"><a th:href="@{/catalogo}" href="/catalogo">Ver o catálogo completo <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></p>
+      </div>
+    </section>
+
+    <!-- SETORES -->
+    <section class="section" aria-labelledby="tSetores">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="tSetores">Escolha um setor</h2>
+          <p>Cada grupo de animais tem a sua própria área, com as espécies e os produtos correspondentes.</p>
+        </div>
+        <div class="group-grid">
+          <a class="group-card" th:each="g : ${grupos}" th:href="@{/grupo/{s}(s=${g.slug})}" href="/">
+            <span class="group-media">
+              <i th:class="'fa-solid ' + ${g.icone}" aria-hidden="true"></i>
+              <img th:if="${@fotos.grupo(g.slug) != null}" th:src="@{${@fotos.grupo(g.slug)}}" th:alt="'Imagem do setor ' + ${g.nome}"
+                   th:attr="data-fallback=${@fotos.ilustracaoGrupo(g.slug)}"
+                   loading="lazy" width="480" height="320">
+            </span>
+            <span class="group-text">
+              <strong th:text="${g.nome}">Aves</strong>
+              <span th:text="${g.descricao}">Descrição do setor</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ESPÉCIES -->
+    <section class="section section-alt" aria-labelledby="tEspecies">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="tEspecies">Procure por espécie</h2>
+          <p>Acesse diretamente os produtos do animal que você cuida.</p>
+        </div>
+        <ul class="species-grid">
+          <li th:each="e : ${todasEspecies}" th:style="'--cor:' + ${e.cor}">
+            <a class="species-card" th:href="@{/especie/{s}(s=${e.slug})}" href="/">
+              <span class="species-media">
+                <i th:class="'fa-solid ' + ${e.icone}" aria-hidden="true"></i>
+                <img th:if="${@fotos.especie(e.slug) != null}" th:src="@{${@fotos.especie(e.slug)}}"
+                     th:alt="'Imagem de ' + ${e.nome}" th:attr="data-fallback=${@fotos.ilustracaoEspecie(e.slug)}"
+                     loading="lazy" width="320" height="240">
+              </span>
+              <span class="species-name" th:text="${e.nome}">Coelhos</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- TIPOS DE PRODUTO -->
+    <section class="section" aria-labelledby="tTipos">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="tTipos">Atalhos por tipo de produto</h2>
+          <p>Alimentação, abrigos, brinquedos, acessórios e cuidados para todas as espécies.</p>
+        </div>
+        <div class="shortcut-grid">
+          <a class="shortcut" th:each="c : ${categorias}" th:href="@{/catalogo(categoria=${c.slug})}" href="/catalogo">
+            <i th:class="'fa-solid ' + ${c.icone}" aria-hidden="true"></i>
+            <strong th:text="${c.rotulo}">Alimentação</strong>
+            <span th:text="${c.descricao}">Descrição</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SELEÇÃO DA LOJA -->
+    <section class="section section-alt" aria-labelledby="tDestaques" th:if="${not #lists.isEmpty(destaques)}">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="tDestaques">Seleção da loja</h2>
+          <p>Alguns produtos de espécies variadas para você conhecer o catálogo.</p>
+        </div>
+        <div class="product-grid">
+          <th:block th:each="p : ${destaques}">
+            <th:block th:replace="~{fragments :: card(${p})}"></th:block>
+          </th:block>
+        </div>
+        <p class="section-more"><a class="btn btn-outline" th:href="@{/catalogo}" href="/catalogo">Ver todos os produtos</a></p>
+      </div>
+    </section>
+
+    <!-- INSTITUCIONAL -->
+    <section class="section" aria-labelledby="tSobre">
+      <div class="container about-strip">
+        <div>
+          <h2 id="tSobre">Sobre o BunnyFlix</h2>
+          <p>O BunnyFlix é um catálogo digital de produtos para animais de estimação. O objetivo do site é facilitar a
+             consulta: reunir os itens por espécie e por tipo de produto, com descrições, tamanhos e preços informativos.</p>
+          <p>O site não realiza vendas: não há carrinho, pedido nem pagamento.</p>
+        </div>
+        <div class="about-actions">
+          <a class="btn btn-primary" th:href="@{/sobre}" href="/sobre">Conhecer a loja</a>
+          <a class="btn btn-outline" th:href="@{/contato}" href="/contato">Falar com a loja</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <th:block th:replace="~{fragments :: rodape}"></th:block>
+  <script th:src="@{/js/script.js}" src="/js/script.js"></script>
+</body>
+</html>

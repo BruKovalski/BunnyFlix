@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{fragments :: head(${tituloPagina}, ${descricaoPagina})}">
+  <title>Sobre</title>
+</head>
+<body>
+  <th:block th:replace="~{fragments :: cabecalho}"></th:block>
+  <main id="conteudo">
+    <section class="page-hero">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Você está em">
+          <ol><li><a th:href="@{/}" href="/">Início</a></li><li><span aria-current="page">Sobre</span></li></ol>
+        </nav>
+        <p class="eyebrow">A loja</p>
+        <h1>Sobre o BunnyFlix</h1>
+        <p class="page-lead">Um catálogo digital para conhecer produtos de cuidado com animais de estimação.</p>
+      </div>
+    </section>
+    <div class="container prose">
+      <h2>A proposta</h2>
+      <p>O BunnyFlix reúne, em um único catálogo, produtos para cães, gatos, aves, peixes, coelhos e outros pequenos
+         animais. Os itens são organizados por setor, por espécie e por tipo de produto, para que seja fácil encontrar
+         o que cada animal precisa.</p>
+      <h2>O que você encontra</h2>
+      <ul>
+        <li>Alimentação, habitats e abrigos, brinquedos, acessórios e produtos de higiene.</li>
+        <li>Páginas por espécie, com informações gerais sobre o animal.</li>
+        <li>Busca, filtros e ordenação para comparar produtos.</li>
+        <li>Páginas individuais com descrição, tamanho ou embalagem e preço informativo.</li>
+      </ul>
+      <h2>Como funciona</h2>
+      <p>O site é de consulta. Não existem carrinho, pedido nem pagamento, e qualquer pessoa pode navegar sem criar
+         conta. O acesso por login existe apenas para a área do Grêmio e não altera o catálogo.</p>
+      <p>Os produtos, os preços e as descrições exibidos neste projeto são de demonstração.</p>
+      <p><a class="btn btn-primary" th:href="@{/catalogo}" href="/catalogo">Explorar o catálogo</a></p>
+    </div>
+  </main>
+  <th:block th:replace="~{fragments :: rodape}"></th:block>
+  <script th:src="@{/js/script.js}" src="/js/script.js"></script>
+</body>
+</html>
