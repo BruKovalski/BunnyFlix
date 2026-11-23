@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{fragments :: head(${tituloPagina}, ${descricaoPagina})}">
+  <title>Catálogo</title>
+</head>
+<body>
+  <th:block th:replace="~{fragments :: cabecalho}"></th:block>
+
+  <main id="conteudo">
+
+    <!-- CABEÇALHO DA PÁGINA (muda conforme o escopo: catálogo, setor ou espécie) -->
+    <section class="page-hero" th:style="${especieInfo != null} ? '--cor:' + ${especieInfo.cor}">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Você está em">
+          <ol>
+            <li><a th:href="@{/}" href="/">Início</a></li>
+            <li th:if="${grupoInfo == null}"><a th:href="@{/catalogo}" href="/catalogo" th:attr="aria-current=${busca == null} ? 'page'">Catálogo</a></li>
+            <li th:if="${grupoInfo != null}"><a th:href="@{/grupo/{s}(s=${grupoInfo.slug})}" href="/" th:text="${grupoInfo.nome}"
+                  th:attr="aria-current=${especieInfo == null} ? 'page'">Aves</a></li>
+            <li th:if="${especieInfo != null}"><span aria-current="page" th:text="${especieInfo.nome}">Calopsitas</span></li>
+          </ol>
+        </nav>
+
+        <th:block th:if="${especieInfo != null}">
+          <p class="eyebrow" th:text="${especieInfo.grupo.nome}">Aves</p>
+          <h1 th:text="'Produtos para ' + ${especieInfo.nome}">Produtos para Calopsitas</h1>
+          <p class="sci"><em th:text="${especieInfo.cientifico}">Nymphicus hollandicus</em></p>
+          <p class="page-lead" th:text="${especieInfo.curiosidade}">Curiosidade sobre a espécie.</p>
+        </th:block>
+
+        <th:block th:if="${especieInfo == null and grupoInfo != null}">
+          <p class="eyebrow">Setor</p>
+          <h1 th:text="${grupoInfo.nome}">Aves</h1>
+          <p class="page-lead" th:text="${grupoInfo.descricao}">Descrição do setor.</p>
+        </th:block>
+
+        <th:block th:if="${grupoInfo == null}">
+          <p class="eyebrow">Catálogo</p>
+          <h1 th:if="${busca == null}">Todos os produtos</h1>
+          <h1 th:if="${busca != null}">Resultados para “<span th:text="${busca}">termo</span>”</h1>
+          <p class="page-lead">Use a busca e os filtros para encontrar produtos por espécie, tipo e faixa de preço.</p>
+        </th:block>
+
+        <!-- Subcategorias: espécies do setor -->
+        <nav class="chip-row" th:if="${not #lists.isEmpty(especiesDoGrupo)}" aria-label="Espécies deste setor">
+          <a class="chip" th:href="@{/grupo/{s}(s=${grupoInfo.slug})}" href="/"
+             th:classappend="${especieInfo == null} ? 'active'">Todas</a>
+          <a class="chip" th:each="e : ${especiesDoGrupo}" th:href="@{/especie/{s}(s=${e.slug})}" href="/"
+             th:text="${e.nome}" th:classappend="${especieInfo != null and especieInfo.slug == e.slug} ? 'active'"
+             th:attr="aria-current=${especieInfo != null and especieInfo.slug == e.slug} ? 'page'">Calopsitas</a>
+        </nav>
+        <!-- Catálogo geral: setores -->
+        <nav class="chip-row" th:if="${grupoInfo == null}" aria-label="Setores">
+          <a class="chip" th:each="g : ${grupos}" th:href="@{/grupo/{s}(s=${g.slug})}" href="/" th:text="${g.nome}">Aves</a>
+        </nav>
+      </div>
+    </section>
+
+    <div class="container catalog-layout">
+
+      <!-- FILTROS -->
+      <aside class="filters" aria-label="Filtros e ordenação">
+        <button type="button" class="btn btn-outline filters-toggle" id="filtrosBtn" aria-expanded="false" aria-controls="filtros">
+          <i class="fa-solid fa-sliders" aria-hidden="true"></i> Filtros e ordenação
+        </button>
+        <form id="filtros" class="filters-form" th:action="@{${baseUrl}}" action="/catalogo" method="get">
+          <div class="field">
+            <label for="f-q">Buscar</label>
+            <input type="search" id="f-q" name="q" th:value="${busca}" maxlength="80" placeholder="Nome, tipo ou descrição">
+          </div>
+          <div class="field">
+            <label for="f-categoria">Tipo de produto</label>
+            <select id="f-categoria" name="categoria">
+              <option value="">Todos os tipos</option>
+              <option th:each="c : ${categorias}" th:value="${c.slug}" th:text="${c.rotulo}"
+                      th:selected="${c.slug == categoriaSel}">Alimentação</option>
+            </select>
+          </div>
+          <fieldset class="field price-field">
+            <legend>Faixa de preço (R$)</legend>
+            <div class="price-inputs">
+              <div>
+                <label for="f-min" class="sr-only">Preço mínimo</label>
+                <input type="number" id="f-min" name="min" min="0" step="0.01" inputmode="decimal"
+                       placeholder="Mínimo" th:value="${minTxt}">
+              </div>
+              <span aria-hidden="true">até</span>
+              <div>
+                <label for="f-max" class="sr-only">Preço máximo</label>
+                <input type="number" id="f-max" name="max" min="0" step="0.01" inputmode="decimal"
+                       placeholder="Máximo" th:value="${maxTxt}">
+              </div>
+            </div>
+          </fieldset>
+          <div class="field">
+            <label for="f-ordem">Ordenar por</label>
+            <select id="f-ordem" name="ordem">
+              <option value="" th:selected="${ordem == null}">Padrão (variedade)</option>
+              <option value="nome" th:selected="${ordem == 'nome'}">Nome (A–Z)</option>
+              <option value="preco-asc" th:selected="${ordem == 'preco-asc'}">Menor preço</option>
+              <option value="preco-desc" th:selected="${ordem == 'preco-desc'}">Maior preço</option>
+            </select>
+          </div>
+          <div class="filter-actions">
+            <button type="submit" class="btn btn-primary">Aplicar</button>
+            <a class="btn btn-ghost" th:href="@{${baseUrl}}" href="/catalogo" th:if="${filtrado}">Limpar filtros</a>
+          </div>
+        </form>
+      </aside>
+
+      <!-- RESULTADOS -->
+      <section class="results" aria-labelledby="tResultados">
+        <h2 id="tResultados" class="results-count" aria-live="polite">
+          <span th:text="${resultado.total}">0</span>
+          <span th:text="${resultado.total == 1} ? 'produto encontrado' : 'produtos encontrados'">produtos encontrados</span>
+        </h2>
+
+        <div class="product-grid" th:if="${resultado.total > 0}">
+          <th:block th:each="p : ${resultado.itens}">
+            <th:block th:replace="~{fragments :: card(${p})}"></th:block>
+          </th:block>
+        </div>
+
+        <div class="empty-state" th:if="${resultado.total == 0}">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <h3>Nenhum produto encontrado</h3>
+          <p>Não encontramos produtos com esses critérios. Tente outro nome, ajuste a faixa de preço ou remova os filtros.</p>
+          <div class="empty-actions">
+            <a class="btn btn-primary" th:href="@{${baseUrl}}" href="/catalogo" th:if="${filtrado}">Limpar filtros</a>
+            <a class="btn btn-outline" th:href="@{/catalogo}" href="/catalogo">Ver todo o catálogo</a>
+          </div>
+        </div>
+
+        <th:block th:replace="~{fragments :: paginacao(${resultado})}"></th:block>
+      </section>
+    </div>
+  </main>
+
+  <th:block th:replace="~{fragments :: rodape}"></th:block>
+  <script th:src="@{/js/script.js}" src="/js/script.js"></script>
+</body>
+</html>

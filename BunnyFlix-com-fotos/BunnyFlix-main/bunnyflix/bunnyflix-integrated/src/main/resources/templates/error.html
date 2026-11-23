@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light dark">
+  <script>
+    /* Aplica o tema antes da primeira pintura (evita clarão) e marca que o JavaScript está ativo. */
+    (function () {
+      var raiz = document.documentElement, tema = null;
+      try { tema = localStorage.getItem('bunnyflix-tema'); } catch (e) {}
+      if (tema !== 'dark' && tema !== 'light') {
+        tema = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      raiz.setAttribute('data-theme', tema);
+      raiz.classList.add('js');
+    })();
+  </script>
+  <title>Página não encontrada | BunnyFlix</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+<body>
+  <main id="conteudo" class="container error-page">
+    <div class="empty-state">
+      <i class="fa-solid fa-paw" aria-hidden="true"></i>
+      <h1 th:if="${status == 404}">Página não encontrada</h1>
+      <h1 th:unless="${status == 404}">Algo deu errado</h1>
+      <p th:if="${status == 404}">O endereço que você acessou não existe ou o produto não está mais no catálogo.</p>
+      <p th:unless="${status == 404}">Não foi possível carregar esta página agora. Tente novamente em instantes.</p>
+      <div class="empty-actions">
+        <a class="btn btn-primary" th:href="@{/}" href="/">Voltar ao início</a>
+        <a class="btn btn-outline" th:href="@{/catalogo}" href="/catalogo">Ver o catálogo</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
