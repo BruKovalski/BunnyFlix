@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{fragments :: head(${tituloPagina}, ${descricaoPagina})}">
+  <title>Produto</title>
+</head>
+<body>
+  <th:block th:replace="~{fragments :: cabecalho}"></th:block>
+
+  <main id="conteudo" class="container product-page"
+        th:style="'--cor:' + ${especieInfo != null ? especieInfo.cor : '#5b6b7a'}">
+
+    <nav class="breadcrumb" aria-label="Você está em">
+      <ol>
+        <li><a th:href="@{/}" href="/">Início</a></li>
+        <li th:if="${especieInfo != null}"><a th:href="@{/grupo/{s}(s=${especieInfo.grupo.slug})}" href="/" th:text="${especieInfo.grupo.nome}">Aves</a></li>
+        <li th:if="${especieInfo != null}"><a th:href="@{/especie/{s}(s=${especieInfo.slug})}" href="/" th:text="${especieInfo.nome}">Calopsitas</a></li>
+        <li><span aria-current="page" th:text="${produto.titulo}">Produto</span></li>
+      </ol>
+    </nav>
+
+    <article class="product-detail">
+      <div class="detail-media">
+        <i th:class="'fa-solid ' + ${categoriaInfo != null ? categoriaInfo.icone : 'fa-paw'}" aria-hidden="true"></i>
+        <img th:if="${produto.imagemUrl != null and not #strings.isEmpty(produto.imagemUrl)}"
+             th:src="${produto.imagemUrl}" th:alt="${produto.titulo}" width="720" height="540"
+             th:attr="data-fallback=${categoriaInfo != null ? @fotos.categoria(categoriaInfo.slug) : null}">
+        <img th:if="${(produto.imagemUrl == null or #strings.isEmpty(produto.imagemUrl)) and categoriaInfo != null and @fotos.categoria(categoriaInfo.slug) != null}"
+             class="ilustracao" th:src="@{${@fotos.categoria(categoriaInfo.slug)}}"
+             th:alt="'Ilustração: ' + ${categoriaInfo.rotulo}" width="720" height="540">
+        <p class="media-note" th:if="${produto.imagemUrl == null or #strings.isEmpty(produto.imagemUrl)}">Ilustração do tipo de produto. A foto do produto ainda não foi cadastrada.</p>
+      </div>
+
+      <div class="detail-info">
+        <p class="eyebrow" th:text="${categoriaInfo != null ? categoriaInfo.rotulo : produto.categoria}">Alimentação</p>
+        <h1 th:text="${produto.titulo}">Título do produto</h1>
+        <p class="detail-species" th:if="${especieInfo != null}">
+          Para <a th:href="@{/especie/{s}(s=${especieInfo.slug})}" href="/" th:text="${especieInfo.nome}">Coelhos</a>
+        </p>
+
+        <p class="detail-price" th:if="${produto.preco != null}">
+          <span class="price" th:text="'R$ ' + ${#numbers.formatDecimal(produto.preco, 1, 'POINT', 2, 'COMMA')}">R$ 49,90</span>
+          <span class="price-note">preço informativo</span>
+        </p>
+
+        <p class="detail-desc" th:text="${produto.descricao}">Descrição completa.</p>
+
+        <h2 class="detail-sub">Ficha do produto</h2>
+        <dl class="spec-list">
+          <div><dt>Tipo de produto</dt><dd th:text="${categoriaInfo != null ? categoriaInfo.rotulo : produto.categoria}">Alimentação</dd></div>
+          <div><dt>Espécie</dt><dd th:text="${produto.especie}">Coelhos</dd></div>
+          <div th:if="${especieInfo != null}"><dt>Setor</dt><dd th:text="${especieInfo.grupo.nome}">Pequenos Mamíferos</dd></div>
+          <div><dt>Tamanho ou embalagem</dt><dd th:text="${not #strings.isEmpty(produto.medida) ? produto.medida : 'Não informado'}">Pacote de 1 kg</dd></div>
+        </dl>
+
+        <p class="catalog-notice">
+          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+          O BunnyFlix é um catálogo de consulta. Não é possível comprar por este site.
+          <a th:href="@{/contato}" href="/contato">Veja como falar com a loja</a>.
+        </p>
+
+        <div class="detail-actions">
+          <a class="btn btn-primary" th:if="${especieInfo != null}" th:href="@{/especie/{s}(s=${especieInfo.slug})}" href="/">
+            <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Voltar para <span th:text="${especieInfo.nome}">Coelhos</span></a>
+          <a class="btn btn-outline" th:href="@{/catalogo}" href="/catalogo">Voltar ao catálogo</a>
+        </div>
+      </div>
+    </article>
+
+    <section class="section-related" aria-labelledby="tRelacionados" th:if="${not #lists.isEmpty(relacionados)}">
+      <h2 id="tRelacionados">Outros produtos para <span th:text="${produto.especie}">Coelhos</span></h2>
+      <div class="product-grid">
+        <th:block th:each="p : ${relacionados}">
+          <th:block th:replace="~{fragments :: card(${p})}"></th:block>
+        </th:block>
+      </div>
+    </section>
+  </main>
+
+  <th:block th:replace="~{fragments :: rodape}"></th:block>
+  <script th:src="@{/js/script.js}" src="/js/script.js"></script>
+</body>
+</html>

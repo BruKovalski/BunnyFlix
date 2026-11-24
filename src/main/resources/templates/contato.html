@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{fragments :: head(${tituloPagina}, ${descricaoPagina})}">
+  <title>Contato</title>
+</head>
+<body>
+  <th:block th:replace="~{fragments :: cabecalho}"></th:block>
+  <main id="conteudo">
+    <section class="page-hero">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Você está em">
+          <ol><li><a th:href="@{/}" href="/">Início</a></li><li><span aria-current="page">Contato</span></li></ol>
+        </nav>
+        <p class="eyebrow">Atendimento</p>
+        <h1>Contato</h1>
+        <p class="page-lead">Canais para falar com a loja.</p>
+      </div>
+    </section>
+    <div class="container prose">
+      <dl class="contact-list" th:if="${loja.temContato}">
+        <div th:if="${not #strings.isEmpty(loja.email)}"><dt><i class="fa-solid fa-envelope" aria-hidden="true"></i> E-mail</dt>
+          <dd><a th:href="'mailto:' + ${loja.email}" th:text="${loja.email}">email</a></dd></div>
+        <div th:if="${not #strings.isEmpty(loja.telefone)}"><dt><i class="fa-solid fa-phone" aria-hidden="true"></i> Telefone</dt>
+          <dd th:text="${loja.telefone}">telefone</dd></div>
+        <div th:if="${not #strings.isEmpty(loja.endereco)}"><dt><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Endereço</dt>
+          <dd th:text="${loja.endereco}">endereço</dd></div>
+        <div th:if="${not #strings.isEmpty(loja.horario)}"><dt><i class="fa-solid fa-clock" aria-hidden="true"></i> Horário de atendimento</dt>
+          <dd th:text="${loja.horario}">horário</dd></div>
+        <div th:if="${not #strings.isEmpty(loja.instagram)}"><dt><i class="fa-brands fa-instagram" aria-hidden="true"></i> Instagram</dt>
+          <dd th:text="${loja.instagram}">perfil</dd></div>
+      </dl>
+      <div class="empty-state" th:unless="${loja.temContato}">
+        <i class="fa-solid fa-envelope-open" aria-hidden="true"></i>
+        <h2>Contatos ainda não informados</h2>
+        <p>A loja ainda não cadastrou seus canais de atendimento. Enquanto isso, você pode consultar todos os produtos no catálogo.</p>
+        <a class="btn btn-primary" th:href="@{/catalogo}" href="/catalogo">Ver o catálogo</a>
+      </div>
+    </div>
+  </main>
+  <th:block th:replace="~{fragments :: rodape}"></th:block>
+  <script th:src="@{/js/script.js}" src="/js/script.js"></script>
+</body>
+</html>

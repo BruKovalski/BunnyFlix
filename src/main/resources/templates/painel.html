@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Área do Tricolor – BunnyFlix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/gremio.css}" href="/css/gremio.css">
+</head>
+<body class="painel-page">
+
+  <main class="container">
+    <div class="header">
+      <h1><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Área do Tricolor</h1>
+      <div class="nav-btns">
+        <a th:href="@{/}" href="/" class="btn-voltar"><i class="fa-solid fa-store" aria-hidden="true"></i> Ir ao BunnyFlix</a>
+        <a th:href="@{/login}" href="/login" class="btn-sair"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> Sair</a>
+      </div>
+    </div>
+
+    <div class="alert-sucesso" role="status" th:text="${mensagem}">Login realizado com sucesso!</div>
+    <p class="boas-vindas" th:if="${usuarioNome}">Bem-vindo(a), <strong th:text="${usuarioNome}">tricolor</strong>!</p>
+
+    <h2>Histórico de logins gravados no banco H2</h2>
+    <div class="tabela-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Usuário</th>
+            <th scope="col">IP do acesso</th>
+            <th scope="col">Data e hora</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="log : ${logs}">
+            <td th:text="${log.id}">1</td>
+            <td th:text="${log.usuario.usuario}">tricolor</td>
+            <td th:text="${log.ipUsuario}">127.0.0.1</td>
+            <td th:text="${#temporals.format(log.dataAcesso, 'dd/MM/yyyy HH:mm:ss')}">28/09/2026 10:00:00</td>
+            <td>
+              <span th:if="${log.sucesso}" class="status-ok">Sucesso</span>
+              <span th:unless="${log.sucesso}" class="status-falha">Falha</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="sem-registros" th:if="${#lists.isEmpty(logs)}">Nenhum acesso registrado ainda.</p>
+  </main>
+
+</body>
+</html>

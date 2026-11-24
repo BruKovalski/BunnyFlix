@@ -1,0 +1,14 @@
+ALTERAÇÕES DE LOGIN - BUNNYFLIX
+
+1. Após autenticação correta, o navegador é redirecionado diretamente para /catalogo.
+2. A sessão mantém o usuário identificado durante a navegação. O menu exibe o nome e oferece o botão Sair.
+3. O botão Sair envia POST /logout e invalida a sessão.
+4. A página /login apresenta formulários para entrar e criar conta.
+5. Novas contas são salvas na tabela usuarios do H2. As senhas são armazenadas com hash BCrypt, nunca em texto puro.
+6. O H2 agora usa banco em arquivo em ./data/bunnyflixdb, preservando os usuários após reiniciar a aplicação.
+7. Usuários de demonstração criados em banco novo: tricolor / 1903 e gremio / 1903.
+
+Para executar: mvn spring-boot:run
+Endereço: http://localhost:8080
+
+A sessão não expira por inatividade e o cookie é persistente; ela é encerrada pelo botão Sair ou quando o servidor é reiniciado.

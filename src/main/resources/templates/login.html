@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrar ou criar conta – BunnyFlix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/gremio.css}" href="/css/gremio.css">
+</head>
+<body class="login-page">
+  <div class="top-bar">
+    <a th:href="@{/}" href="/"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Voltar ao BunnyFlix</a>
+  </div>
+
+  <main class="login-card login-card-wide">
+    <div class="header-gremio">
+      <i class="fa-solid fa-paw" aria-hidden="true"></i>
+      <h1>BunnyFlix</h1>
+      <p>Entre ou crie sua conta para acessar o catálogo.</p>
+    </div>
+
+    <div th:if="${mensagem}" class="alert alert-sucesso" role="status" th:text="${mensagem}"></div>
+    <div th:if="${mensagemCadastro}" class="alert alert-erro" role="alert" th:text="${mensagemCadastro}"></div>
+
+    <section class="login-section" aria-labelledby="tituloEntrar">
+      <h2 id="tituloEntrar">Já tenho uma conta</h2>
+      <form th:action="@{/login}" action="/login" method="post">
+        <div class="input-group">
+          <label for="usuario"><i class="fa-solid fa-user" aria-hidden="true"></i> Usuário</label>
+          <input type="text" id="usuario" name="usuario" placeholder="Digite seu usuário"
+                 autocomplete="username" autocapitalize="none" required maxlength="30">
+        </div>
+        <div class="input-group">
+          <label for="senha"><i class="fa-solid fa-lock" aria-hidden="true"></i> Senha</label>
+          <input type="password" id="senha" name="senha" placeholder="Digite sua senha"
+                 autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn-login">Entrar no catálogo</button>
+      </form>
+      <div class="dica-credenciais">
+        <p><strong>Conta de demonstração:</strong> tricolor</p>
+        <p><strong>Senha:</strong> 1903</p>
+      </div>
+    </section>
+
+    <div class="login-divider"><span>OU</span></div>
+
+    <section class="login-section" aria-labelledby="tituloCadastro">
+      <h2 id="tituloCadastro">Criar novo usuário</h2>
+      <form th:action="@{/cadastro}" action="/cadastro" method="post">
+        <div class="input-group">
+          <label for="nomeCadastro">Nome</label>
+          <input type="text" id="nomeCadastro" name="nome" placeholder="Como podemos chamar você?"
+                 autocomplete="name" maxlength="80" required>
+        </div>
+        <div class="input-group">
+          <label for="usuarioCadastro">Usuário</label>
+          <input type="text" id="usuarioCadastro" name="usuario" placeholder="Crie um nome de usuário"
+                 autocomplete="username" autocapitalize="none" minlength="3" maxlength="30" required>
+          <small>3 a 30 caracteres: letras, números, ponto, hífen ou sublinhado.</small>
+        </div>
+        <div class="input-group">
+          <label for="senhaCadastro">Senha</label>
+          <input type="password" id="senhaCadastro" name="senha" placeholder="Crie uma senha"
+                 autocomplete="new-password" minlength="6" required>
+          <small>A senha precisa ter pelo menos 6 caracteres.</small>
+        </div>
+        <div class="input-group">
+          <label for="confirmarSenha">Confirmar senha</label>
+          <input type="password" id="confirmarSenha" name="confirmarSenha" placeholder="Digite a senha novamente"
+                 autocomplete="new-password" minlength="6" required>
+        </div>
+        <button type="submit" class="btn-login btn-cadastro">Criar conta</button>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

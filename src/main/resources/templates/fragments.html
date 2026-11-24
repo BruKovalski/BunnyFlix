@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+
+<!-- HEAD COMUM: título, descrição, canônica, compartilhamento, fontes e estilos -->
+<head th:fragment="head(titulo, descricao)">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${titulo}">BunnyFlix</title>
+  <meta name="description" th:content="${descricao}" content="">
+  <meta name="theme-color" content="#1f5f5b">
+  <meta name="color-scheme" content="light dark">
+  <script>
+    /* Aplica o tema antes da primeira pintura (evita clarão) e marca que o JavaScript está ativo. */
+    (function () {
+      var raiz = document.documentElement, tema = null;
+      try { tema = localStorage.getItem('bunnyflix-tema'); } catch (e) {}
+      if (tema !== 'dark' && tema !== 'light') {
+        tema = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      raiz.setAttribute('data-theme', tema);
+      raiz.classList.add('js');
+    })();
+  </script>
+  <meta name="robots" content="noindex, follow" th:if="${noindex}">
+  <link rel="canonical" th:if="${canonical != null and noindex != true}" th:href="${canonical}">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:site_name" th:content="${loja.nome}" content="BunnyFlix">
+  <meta property="og:title" th:content="${titulo}" content="">
+  <meta property="og:description" th:content="${descricao}" content="">
+  <meta property="og:url" th:if="${canonical != null}" th:content="${canonical}" content="">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+
+<body>
+
+  <!-- CABEÇALHO -->
+  <header class="site-header" th:fragment="cabecalho">
+    <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+    <div class="header-inner">
+      <a th:href="@{/}" href="/" class="logo" aria-label="BunnyFlix – página inicial">
+        <i class="fa-solid fa-paw" aria-hidden="true"></i>
+        <span th:text="${loja.nome}">BunnyFlix</span>
+      </a>
+
+      <div class="header-actions">
+        <button type="button" class="theme-toggle" id="temaBtn" aria-pressed="false" title="Alternar modo escuro">
+          <i class="fa-solid fa-moon" aria-hidden="true"></i>
+          <i class="fa-solid fa-sun" aria-hidden="true"></i>
+          <span class="sr-only" id="temaRotulo">Ativar modo escuro</span>
+        </button>
+        <button type="button" class="menu-toggle" id="menuBtn" aria-expanded="false" aria-controls="menuPrincipal">
+          <i class="fa-solid fa-bars" aria-hidden="true"></i>
+          <span class="sr-only">Abrir ou fechar o menu</span>
+        </button>
+      </div>
+
+      <nav class="main-nav" id="menuPrincipal" aria-label="Navegação principal">
+        <ul>
+          <li><a th:href="@{/}" href="/"
+                 th:classappend="${paginaAtual == 'inicio'} ? 'active'"
+                 th:attr="aria-current=${paginaAtual == 'inicio'} ? 'page'">Início</a></li>
+          <li th:each="g : ${grupos}">
+            <a th:href="@{/grupo/{s}(s=${g.slug})}" href="/" th:text="${g.nome}"
+               th:classappend="${paginaAtual == 'grupo:' + g.slug} ? 'active'"
+               th:attr="aria-current=${paginaAtual == 'grupo:' + g.slug} ? 'page'">Aves</a>
+          </li>
+          <li><a th:href="@{/catalogo}" href="/catalogo"
+                 th:classappend="${paginaAtual == 'catalogo'} ? 'active'"
+                 th:attr="aria-current=${paginaAtual == 'catalogo'} ? 'page'">Catálogo completo</a></li>
+          <li><a th:href="@{/sobre}" href="/sobre"
+                 th:classappend="${paginaAtual == 'sobre'} ? 'active'"
+                 th:attr="aria-current=${paginaAtual == 'sobre'} ? 'page'">Sobre</a></li>
+          <li><a th:href="@{/contato}" href="/contato"
+                 th:classappend="${paginaAtual == 'contato'} ? 'active'"
+                 th:attr="aria-current=${paginaAtual == 'contato'} ? 'page'">Contato</a></li>
+        </ul>
+
+        <form class="search-form" th:action="@{/catalogo}" action="/catalogo" method="get" role="search">
+          <label for="busca" class="sr-only">Buscar produtos</label>
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <input type="search" id="busca" name="q" th:value="${busca}" placeholder="Buscar produto ou espécie"
+                 autocomplete="off" maxlength="80">
+          <button type="submit" class="sr-only">Buscar</button>
+        </form>
+
+        <span class="nav-user" th:if="${session.usuarioLogado != null}">
+          <i class="fa-solid fa-user-check" aria-hidden="true"></i>
+          <span th:text="${session.nomeUsuarioLogado != null ? session.nomeUsuarioLogado : session.usuarioLogado}">Usuário</span>
+        </span>
+        <form th:if="${session.usuarioLogado != null}" th:action="@{/logout}" action="/logout" method="post" class="nav-logout-form">
+          <button type="submit" class="nav-login nav-logout" title="Encerrar sessão">
+            <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> <span>Sair</span>
+          </button>
+        </form>
+        <a th:if="${session.usuarioLogado == null}" th:href="@{/login}" href="/login" class="nav-login" title="Entrar">
+          <i class="fa-solid fa-user" aria-hidden="true"></i> <span>Entrar</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- CARTÃO DE PRODUTO -->
+  <article class="product-card" th:fragment="card(p)"
+           th:with="esp=${mapaEspecies.get(p.especie)}, cat=${mapaCategorias.get(p.categoria)}"
+           th:style="'--cor:' + ${esp != null ? esp.cor : '#5b6b7a'}">
+    <div class="card-media">
+      <i th:class="'fa-solid ' + ${cat != null ? cat.icone : 'fa-paw'}" aria-hidden="true"></i>
+      <img th:if="${p.imagemUrl != null and not #strings.isEmpty(p.imagemUrl)}"
+           th:src="${p.imagemUrl}" th:alt="${p.titulo}" loading="lazy" width="400" height="300"
+           th:attr="data-fallback=${cat != null ? @fotos.categoria(cat.slug) : null}">
+      <img th:if="${(p.imagemUrl == null or #strings.isEmpty(p.imagemUrl)) and cat != null and @fotos.categoria(cat.slug) != null}"
+           class="ilustracao" th:src="@{${@fotos.categoria(cat.slug)}}" th:alt="'Ilustração: ' + ${cat.rotulo}"
+           loading="lazy" width="400" height="300">
+      <span class="card-tag" th:text="${cat != null ? cat.rotulo : p.categoria}">Alimentação</span>
+    </div>
+    <div class="card-body">
+      <p class="card-species" th:text="${p.especie}">Coelhos</p>
+      <h3 class="card-title">
+        <a th:href="@{/produto/{s}(s=${p.id + '-' + p.slug})}" href="#" th:text="${p.titulo}">Título do produto</a>
+      </h3>
+      <p class="card-size" th:if="${not #strings.isEmpty(p.medida)}" th:text="${p.medida}">Pacote de 1 kg</p>
+      <div class="card-footer">
+        <p class="price" th:if="${p.preco != null}"
+           th:text="'R$ ' + ${#numbers.formatDecimal(p.preco, 1, 'POINT', 2, 'COMMA')}">R$ 49,90</p>
+        <span class="card-cta">Ver detalhes <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+      </div>
+    </div>
+  </article>
+
+  <!-- PAGINAÇÃO: usa baseUrl e queryBase do modelo -->
+  <nav class="pagination" th:fragment="paginacao(r)" th:if="${r.totalPaginas > 1}" aria-label="Paginação">
+    <a th:if="${r.pagina > 1}" rel="prev" class="page-link"
+       th:href="@{${baseUrl + queryBase + 'pagina=' + (r.pagina - 1)}}" href="#">
+      <i class="fa-solid fa-chevron-left" aria-hidden="true"></i> Anterior</a>
+    <th:block th:each="n : ${r.paginas}">
+      <a th:if="${n != r.pagina}" class="page-link num" th:href="@{${baseUrl + queryBase + 'pagina=' + n}}"
+         href="#" th:text="${n}" th:attr="aria-label=${'Ir para a página ' + n}">2</a>
+      <span th:if="${n == r.pagina}" class="page-link num current" aria-current="page" th:text="${n}">1</span>
+    </th:block>
+    <a th:if="${r.pagina < r.totalPaginas}" rel="next" class="page-link"
+       th:href="@{${baseUrl + queryBase + 'pagina=' + (r.pagina + 1)}}" href="#">
+      Próxima <i class="fa-solid fa-chevron-right" aria-hidden="true"></i></a>
+  </nav>
+
+  <!-- RODAPÉ -->
+  <footer class="site-footer" th:fragment="rodape">
+    <div class="footer-inner">
+      <div class="footer-col footer-brand">
+        <p class="logo footer-logo"><i class="fa-solid fa-paw" aria-hidden="true"></i> <span th:text="${loja.nome}">BunnyFlix</span></p>
+        <p>Catálogo online de produtos para cães, gatos, aves, peixes e pequenos animais. Aqui você consulta
+           produtos e informações; não há compra pelo site.</p>
+      </div>
+      <nav class="footer-col" aria-label="Setores">
+        <h2>Setores</h2>
+        <ul>
+          <li th:each="g : ${grupos}"><a th:href="@{/grupo/{s}(s=${g.slug})}" href="/" th:text="${g.nome}">Aves</a></li>
+          <li><a th:href="@{/catalogo}" href="/catalogo">Catálogo completo</a></li>
+        </ul>
+      </nav>
+      <nav class="footer-col" aria-label="Tipos de produto">
+        <h2>Tipos de produto</h2>
+        <ul>
+          <li th:each="c : ${categorias}"><a th:href="@{/catalogo(categoria=${c.slug})}" href="/catalogo" th:text="${c.rotulo}">Alimentação</a></li>
+        </ul>
+      </nav>
+      <nav class="footer-col" aria-label="A loja">
+        <h2>A loja</h2>
+        <ul>
+          <li><a th:href="@{/}" href="/">Início</a></li>
+          <li><a th:href="@{/sobre}" href="/sobre">Sobre</a></li>
+          <li><a th:href="@{/contato}" href="/contato">Contato</a></li>
+          <li><a th:href="@{/login}" href="/login">Área do Grêmio</a></li>
+        </ul>
+        <ul class="footer-contact" th:if="${loja.temContato}">
+          <li th:if="${not #strings.isEmpty(loja.email)}"><i class="fa-solid fa-envelope" aria-hidden="true"></i> <span th:text="${loja.email}"></span></li>
+          <li th:if="${not #strings.isEmpty(loja.telefone)}"><i class="fa-solid fa-phone" aria-hidden="true"></i> <span th:text="${loja.telefone}"></span></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <p>© <span th:text="${#dates.year(#dates.createNow())}">2026</span> <span th:text="${loja.nome}">BunnyFlix</span>.
+         Catálogo de consulta, sem vendas online. Produtos, preços e descrições são de demonstração.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
